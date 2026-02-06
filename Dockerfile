@@ -1,25 +1,21 @@
-FROM php:8.1-fpm
+# Używamy lekkiego obrazu PHP
+FROM php:8.2-fpm-alpine
 
-# Zainstaluj zależności systemowe i rozszerzenia PHP
-RUN apt-get update && apt-get install -y \
+# Instalujemy zależności systemowe potrzebne do rozszerzeń PHP
+RUN apk add --no-cache \
+    git \
     unzip \
-    iproute2 \
     libpq-dev \
-    libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
-    && docker-php-ext-install pdo_pgsql gd \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    icu-dev
 
-# Zainstaluj Composer
-RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
-    && php composer-setup.php \
-    && php -r "unlink('composer-setup.php');" \
-    && mv composer.phar /usr/local/bin/composer
+# Instalujemy rozszerzenia PHP: do bazy danych (pdo_pgsql) i inne przydatne w Symfony
+RUN docker-php-ext-install \
+    pdo \
+    pdo_pgsql \
+    intl
 
-# PHP-FPM na porcie 9000
-RUN echo "listen = 9000" >> /usr/local/etc/php-fpm.d/www.conf
-RUN echo "Debug: PHP-FPM configured to listen on 9000" > /proc/1/fd/1
+# Pobieramy Composera (menedżera pakietów PHP)
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-CMD ["php-fpm"]
+# Ustawiamy katalog roboczy
+WORKDIR /var/www/html

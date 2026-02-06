@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Strona Główna{% endblock %}
+
+{% block body %}
+<style>
+    body { background: #121212; color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; }
+    
+    /* Nawigacja */
+    .nav-bar { background: #000; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; }
+    .nav-links a { color: #ccc; margin-right: 20px; text-decoration: none; font-weight: bold; transition: color 0.3s; }
+    .nav-links a:hover, .nav-links a.active { color: #ffd700; }
+    .auth a { text-decoration: none; font-weight: bold; }
+    
+    /* Hero Section */
+    .hero { height: 450px; background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://placehold.co/1920x600/222/ffd700?text=Czesci+Samochodowe+Premium'); background-size: cover; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+    .hero h1 { font-size: 3.5em; margin: 0; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+    .hero p { font-size: 1.2em; margin-top: 10px; color: #ddd; }
+    .cta-btn { background: #ffd700; color: #000; padding: 15px 40px; border-radius: 30px; text-decoration: none; font-weight: bold; font-size: 1.2em; margin-top: 30px; transition: transform 0.2s; display: inline-block;}
+    .cta-btn:hover { transform: scale(1.05); background: #ffcc00; }
+
+    /* Partnerzy */
+    .brand-section { max-width: 1200px; margin: 60px auto; padding: 0 20px; text-align: center; }
+    .brands-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 30px; margin-top: 40px; }
+    .brand-card { background: #1e1e1e; padding: 30px; border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; border: 1px solid #333; }
+    .brand-card:hover { transform: translateY(-5px); border-color: #ffd700; }
+    .brand-card img { width: 100px; height: 100px; margin-bottom: 15px; border-radius: 50%; }
+    .brand-name { font-weight: bold; color: #ccc; font-size: 1.1em; }
+</style>
+
+<div class="nav-bar">
+    <div class="nav-links">
+        <a href="{{ path('app_home') }}" class="active">Strona Główna</a>
+        <a href="{{ path('app_products_list') }}">Nasze Produkty</a>
+        {# DODANO LINK DO KONTAKTU #}
+        <a href="{{ path('app_contact') }}">Kontakt</a>
+    </div>
+    <div class="auth">
+        {% if app.user %}
+            <span style="color: #888; margin-right: 10px;">{{ app.user.email }}</span>
+            <a href="{{ path('app_logout') }}" style="color: #ff6b6b;">Wyloguj</a>
+        {% else %}
+            <a href="{{ path('app_login') }}" style="color: #ffd700;">Zaloguj</a>
+            <span style="color: #555; margin: 0 5px;">|</span>
+            <a href="{{ path('app_register') }}" style="color: #ffd700;">Rejestracja</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="hero">
+    <h1>Największy wybór części w sieci</h1>
+    <p>Oryginalne podzespoły od najlepszych producentów</p>
+    <a href="{{ path('app_products_list') }}" class="cta-btn">Przejdź do Sklepu 🔧</a>
+</div>
+
+<div class="brand-section">
+    <h2 style="color: #ffd700;">Nasi Zaufani Partnerzy</h2>
+    <div class="brands-grid">
+        <div class="brand-card">
+            <img src="https://placehold.co/100x100/333/fff?text=B" alt="Bosch">
+            <span class="brand-name">Bosch</span>
+        </div>
+        <div class="brand-card">
+            <img src="https://placehold.co/100x100/333/fff?text=C" alt="Castrol">
+            <span class="brand-name">Castrol</span>
+        </div>
+        <div class="brand-card">
+            <img src="https://placehold.co/100x100/333/fff?text=M" alt="Michelin">
+            <span class="brand-name">Michelin</span>
+        </div>
+        <div class="brand-card">
+            <img src="https://placehold.co/100x100/333/fff?text=Br" alt="Brembo">
+            <span class="brand-name">Brembo</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

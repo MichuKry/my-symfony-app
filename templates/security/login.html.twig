@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Logowanie{% endblock %}
+
+{% block body %}
+<style>
+    .auth-container { max-width: 400px; margin: 50px auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    .form-control { width: 100%; padding: 10px; margin-top: 5px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+    .btn-buy { background: #007bff; color: white; padding: 12px 20px; border: none; border-radius: 5px; width: 100%; font-size: 1.1em; cursor: pointer; }
+    .btn-buy:hover { background: #0056b3; }
+    .alert { padding: 10px; border-radius: 4px; margin-bottom: 20px; }
+    .alert-danger { color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; }
+    .alert-success { color: #155724; background-color: #d4edda; border-color: #c3e6cb; }
+</style>
+
+<div class="nav-bar" style="background: #333; padding: 1rem;">
+    <a href="/" style="color: white; text-decoration: none; font-weight: bold;">← Wróć na stronę główną</a>
+</div>
+
+<div class="auth-container">
+    <h1 style="text-align: center; margin-bottom: 30px;">Zaloguj się</h1>
+
+    {# Tutaj wyświetlamy komunikat "Rejestracja udana" #}
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {# Tutaj wyświetlamy błędy logowania (np. Invalid credentials) #}
+    {% if error %}
+        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+    {% endif %}
+
+    <form method="post">
+        <label for="username">Email</label>
+        {# WAŻNE: name="_username" musi tu być, aby security.yaml to zadziałał #}
+        <input type="email" value="{{ last_username }}" name="_username" id="username" class="form-control" autocomplete="email" required autofocus>
+
+        <label for="password">Hasło</label>
+        <input type="password" name="_password" id="password" class="form-control" autocomplete="current-password" required>
+
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+        <button class="btn-buy" type="submit">
+            Zaloguj się
+        </button>
+    </form>
+</div>
+{% endblock %}

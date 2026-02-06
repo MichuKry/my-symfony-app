@@ -1,0 +1,50 @@
+security:
+    # 1. Haszowanie haseł - Symfony samo dobierze algorytm (np. bcrypt/argon2)
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+
+    # 2. Dostawcy użytkowników (skąd brać dane)
+    providers:
+        # To jest kluczowe: mówimy Symfony, że użytkownicy są w Entity\User
+        # i logują się za pomocą pola EMAIL
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email
+
+    # 3. Firewalle (strefy bezpieczeństwa)
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        main:
+            lazy: true
+            provider: app_user_provider
+            
+            # Konfiguracja formularza logowania
+            form_login:
+                login_path: app_login
+                check_path: app_login
+                enable_csrf: true
+                # Te pola muszą pasować do name="..." w HTML (login.html.twig)
+                username_parameter: _username
+                password_parameter: _password
+                # Gdzie przekierować po udanym zalogowaniu
+                default_target_path: app_home
+
+            # Konfiguracja wylogowania
+            logout:
+                path: app_logout
+                # Gdzie przekierować po wylogowaniu
+                target: app_home
+
+            # Opcjonalnie: zapamiętaj mnie (wymaga odkomentowania w HTML)
+            # remember_me:
+            #     secret: '%kernel.secret%'
+            #     lifetime: 604800
+
+    # 4. Kontrola dostępu (na razie pozwalamy wchodzić wszędzie)
+    access_control:
+        # Tutaj możesz zablokować dostęp do panelu admina w przyszłości
+        # - { path: ^/admin, roles: ROLE_ADMIN }
+        # - { path: ^/profile, roles: ROLE_USER }

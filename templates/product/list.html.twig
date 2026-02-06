@@ -1,0 +1,110 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nasze Produkty{% endblock %}
+
+{% block body %}
+<style>
+    body { background: #1a1a1a; color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; }
+    .nav-bar { background: #000; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; }
+    .nav-links { display: flex; align-items: center; }
+    .nav-links a { color: #ccc; margin-right: 20px; text-decoration: none; font-weight: bold; }
+    .nav-links a:hover, .nav-links a.active { color: #ffd700; }
+    
+    .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+    
+    /* Wyszukiwarka */
+    .search-section { display: flex; gap: 10px; margin-bottom: 40px; background: #222; padding: 20px; border-radius: 10px; }
+    .search-input { flex-grow: 1; padding: 15px; background: #333; border: 1px solid #444; color: #fff; border-radius: 5px; font-size: 16px; }
+    .btn-search { padding: 0 30px; background: #444; color: #fff; border: none; cursor: pointer; border-radius: 5px; font-weight: bold; transition: 0.2s; }
+    .btn-search:hover { background: #ffd700; color: #000; }
+
+    /* Produkty */
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+    .product-card { background: #252525; border-radius: 12px; overflow: hidden; border: 1px solid #333; transition: 0.3s; display: flex; flex-direction: column; }
+    .product-card:hover { transform: translateY(-5px); border-color: #ffd700; }
+    
+    .product-image { width: 100%; height: 200px; object-fit: cover; background: #333; }
+    .product-info { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+    
+    .product-title { margin: 0 0 10px 0; font-size: 1.3em; }
+    .product-desc { color: #aaa; font-size: 0.9em; margin-bottom: 15px; flex-grow: 1; }
+    .price { color: #d9534f; font-size: 1.5em; font-weight: bold; margin-bottom: 15px; }
+    .btn-buy { background: #28a745; color: #fff; padding: 12px; width: 100%; border: none; border-radius: 6px; cursor: pointer; text-align: center; text-decoration: none; font-weight: bold; transition: 0.2s; }
+    .btn-buy:hover { background: #218838; }
+
+    /* Styl licznika koszyka */
+    .cart-link { color: #ffd700 !important; border: 1px solid #ffd700; padding: 5px 15px; border-radius: 20px; transition: 0.3s; }
+    .cart-link:hover { background: #ffd700; color: #000 !important; }
+</style>
+
+<div class="nav-bar">
+    <div class="nav-links">
+        <a href="{{ path('app_home') }}">Strona Główna</a>
+        <a href="{{ path('app_products_list') }}" class="active">Nasze Produkty</a>
+        <a href="{{ path('app_contact') }}">Kontakt</a>
+        
+        {# --- NOWY LINK DO KOSZYKA Z LICZNIKIEM --- #}
+        {# app.session.get('cart') pobiera koszyk bezpośrednio z sesji #}
+        <a href="{{ path('app_cart') }}" class="cart-link">
+            Koszyk 🛒 ({{ app.session.get('cart', [])|length }})
+        </a>
+    </div>
+
+    <div class="auth">
+        {% if app.user %}
+            <span style="color: #ccc; margin-right: 10px;">{{ app.user.email }}</span>
+            <a href="{{ path('app_logout') }}" style="color: #ff6b6b; text-decoration: none;">Wyloguj</a>
+        {% else %}
+            <a href="{{ path('app_login') }}" style="color: #ffd700; text-decoration: none;">Zaloguj</a>
+            <span style="color: #555; margin: 0 5px;">|</span>
+            <a href="{{ path('app_register') }}" style="color: #ffd700; text-decoration: none;">Rejestracja</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="container">
+    <h1 style="margin-bottom: 30px; border-left: 5px solid #ffd700; padding-left: 15px;">Katalog Części</h1>
+    
+    <form class="search-section" action="{{ path('app_products_list') }}" method="get">
+        <input type="text" name="q" class="search-input" placeholder="Wpisz nazwę produktu (np. olej, opony)..." value="{{ searchQuery }}">
+        <button type="submit" class="btn-search">SZUKAJ</button>
+    </form>
+
+    <div class="products-grid">
+        {% for product in products %}
+            <div class="product-card">
+                {# --- 1. WYŚWIETLANIE ZDJĘĆ --- #}
+                {% if product.imageFilename and product.imageFilename starts with 'http' %}
+                    <img src="{{ product.imageFilename }}" class="product-image" alt="{{ product.name }}">
+                {% elseif product.imageFilename %}
+                    <img src="{{ asset(product.imageFilename) }}" class="product-image" alt="{{ product.name }}">
+                {% else %}
+                    <img src="https://placehold.co/400x300/333/fff?text={{ product.name|url_encode }}" class="product-image" alt="{{ product.name }}">
+                {% endif %}
+                
+                <div class="product-info">
+                    <h3 class="product-title">{{ product.name }}</h3>
+
+                    {# --- 2. PRZYCISK EDYCJI --- #}
+                    {% if app.user %}
+                        <a href="{{ path('app_product_edit', {id: product.id}) }}" 
+                           style="display: inline-block; font-size: 0.9em; color: #aaa; text-decoration: underline; margin-bottom: 10px;">
+                           ✏️ Edytuj
+                        </a>
+                    {% endif %}
+                    
+                    <p class="product-desc">{{ product.description }}</p>
+                    <div class="price">{{ product.price / 100 }} PLN</div>
+                    
+                    {# --- 3. PRZYCISK DODAWANIA DO KOSZYKA --- #}
+                    <a href="{{ path('app_cart_add', {id: product.id}) }}" class="btn-buy">Dodaj do koszyka 🛒</a>
+                </div>
+            </div>
+        {% else %}
+            <div style="grid-column: 1/-1; text-align: center; padding: 50px; color: #666;">
+                Nie znaleziono produktów. Spróbuj wpisać inną nazwę.
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dodaj nowy produkt{% endblock %}
+
+{% block body %}
+<style>
+    body { background: #1a1a1a; color: white; font-family: 'Segoe UI', sans-serif; }
+    .nav-bar { background: #000; padding: 1rem 2rem; border-bottom: 1px solid #333; }
+    
+    .form-container { max-width: 600px; margin: 50px auto; background: #252525; padding: 40px; border-radius: 10px; border: 1px solid #333; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+    .form-group { margin-bottom: 20px; }
+    .form-control { width: 100%; padding: 12px; background: #333; border: 1px solid #444; color: white; border-radius: 5px; box-sizing: border-box; }
+    .form-control:focus { border-color: #ffd700; outline: none; }
+    
+    .btn-save { width: 100%; padding: 15px; background: #ffd700; color: black; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; margin-top: 20px; font-size: 1.1em; transition: 0.2s; }
+    .btn-save:hover { background: #e6c200; transform: scale(1.02); }
+    
+    label { display: block; margin-bottom: 8px; color: #ccc; font-weight: bold; }
+    h1 { text-align: center; color: #ffd700; margin-bottom: 30px; }
+</style>
+
+<div class="nav-bar">
+    <a href="{{ path('app_products_list') }}" style="color: #ccc; text-decoration: none; font-weight: bold;">← Wróć do listy produktów</a>
+</div>
+
+<div class="form-container">
+    <h1>Dodaj Produkt</h1>
+
+    {# form_start jest kluczowe - ono dodaje obsługę przesyłania plików! #}
+    {{ form_start(form) }}
+        
+        <div class="form-group">
+            {{ form_label(form.name) }}
+            {{ form_widget(form.name) }}
+            <small style="color: #ff6b6b">{{ form_errors(form.name) }}</small>
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.description) }}
+            {{ form_widget(form.description) }}
+            <small style="color: #ff6b6b">{{ form_errors(form.description) }}</small>
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.price) }}
+            {{ form_widget(form.price) }}
+            <small style="color: #888;">Podaj cenę w groszach (np. 12000 = 120.00 PLN)</small>
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.imageFile) }}
+            {{ form_widget(form.imageFile) }}
+            <small style="color: #888;">Formaty: JPG, PNG. Plik zostanie zapisany na dysku.</small>
+        </div>
+
+        {{ form_widget(form.save, {'attr': {'class': 'btn-save'}}) }}
+
+    {{ form_end(form) }}
+</div>
+{% endblock %}
